@@ -162,6 +162,8 @@ export default function DefensiveQuiz({ mode = 'random', myPosition = null, team
         correctZones={correctZones}
         baseState={situation.baseState}
         myPosition={mode === 'position' ? myPosition : null}
+        ballDestination={situation.ballDestination}
+        playType={situation.playType}
       />
 
       {/* Action area */}

@@ -26,44 +26,114 @@ const POSITION_COLORS = {
   RF:   '#38bdf8', // sky
 }
 
-function BaseballField({ runners = {} }) {
+// Ball destination SVG positions
+const BALL_POSITIONS = {
+  lf:      { x: 130, y: 148 },
+  cf:      { x: 250, y: 118 },
+  rf:      { x: 370, y: 148 },
+  infield: { x: 250, y: 330 },
+  '2b':    { x: 250, y: 213 },
+  '1b':    { x: 365, y: 317 },
+  '3b':    { x: 135, y: 317 },
+  home:    { x: 250, y: 420 },
+}
+
+// Play types that have a batted-ball trajectory from home plate
+const BATTED_BALL_TYPES = new Set(['fly_ball', 'single', 'ground_ball', 'bunt'])
+
+function Baseball({ x, y }) {
+  return (
+    <g transform={`translate(${x},${y})`}>
+      {/* Shadow */}
+      <circle r="11" fill="black" opacity="0.25" transform="translate(1,1)" />
+      {/* Ball */}
+      <circle r="10" fill="white" stroke="#ccc" strokeWidth="0.5" />
+      {/* Red stitching — two curved lines */}
+      <path d="M -3 -7 Q 0 -3 -3 1" fill="none" stroke="#cc2200" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M  3 -7 Q 0 -3  3 1" fill="none" stroke="#cc2200" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M -3  3 Q 0  7 -3 9" fill="none" stroke="#cc2200" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M  3  3 Q 0  7  3 9" fill="none" stroke="#cc2200" strokeWidth="1.5" strokeLinecap="round" />
+    </g>
+  )
+}
+
+function BallIndicator({ ballDestination, playType }) {
+  if (!ballDestination || !playType) return null
+  const dest = BALL_POSITIONS[ballDestination]
+  if (!dest) return null
+
+  const HOME = { x: 250, y: 420 }
+  const showTrajectory = BATTED_BALL_TYPES.has(playType)
+  const isFlyBall = playType === 'fly_ball' || playType === 'single'
+
+  // Midpoint for the arc control point — lifted upward for fly balls
+  const mx = (HOME.x + dest.x) / 2
+  const my = (HOME.y + dest.y) / 2 - (isFlyBall ? 55 : 0)
+
+  const pathD = isFlyBall
+    ? `M ${HOME.x} ${HOME.y} Q ${mx} ${my} ${dest.x} ${dest.y}`
+    : `M ${HOME.x} ${HOME.y} L ${dest.x} ${dest.y}`
+
   return (
     <g>
-      {/* Outfield grass */}
-      <path d="M 25 370 Q 140 15 250 12 Q 360 15 475 370 Z" fill="#3a7d44" />
-      {/* Infield grass (inside the bases) */}
-      <polygon points="250,213 365,317 250,420 135,317" fill="#3f8b4a" />
-      {/* Infield dirt circle */}
-      <circle cx="250" cy="340" r="108" fill="#c8a96e" />
-      {/* Cover infield grass inside dirt circle */}
-      <polygon
-        points="250,213 365,317 250,420 135,317"
-        fill="#3f8b4a"
-        clipPath="url(#infield-clip)"
-      />
-      {/* Base paths */}
-      <line x1="250" y1="420" x2="365" y2="317" stroke="#d4b483" strokeWidth="2" />
-      <line x1="365" y1="317" x2="250" y2="213" stroke="#d4b483" strokeWidth="2" />
-      <line x1="250" y1="213" x2="135" y2="317" stroke="#d4b483" strokeWidth="2" />
-      <line x1="135" y1="317" x2="250" y2="420" stroke="#d4b483" strokeWidth="2" />
-      {/* Foul lines */}
-      <line x1="250" y1="420" x2="25" y2="195" stroke="white" strokeWidth="1.5" opacity="0.6" />
-      <line x1="250" y1="420" x2="475" y2="195" stroke="white" strokeWidth="1.5" opacity="0.6" />
-      {/* Outfield wall */}
-      <path d="M 25 370 Q 140 15 250 12 Q 360 15 475 370" fill="none" stroke="#7c5c35" strokeWidth="8" strokeLinecap="round" />
-      {/* Pitcher's mound */}
-      <ellipse cx="250" cy="333" rx="14" ry="10" fill="#b8996e" />
-      {/* Bases */}
-      <rect x="-8" y="-8" width="16" height="16" fill="white" rx="1" transform="translate(365,317) rotate(45)" />
-      <rect x="-8" y="-8" width="16" height="16" fill="white" rx="1" transform="translate(250,213) rotate(45)" />
-      <rect x="-8" y="-8" width="16" height="16" fill="white" rx="1" transform="translate(135,317) rotate(45)" />
-      {/* Home plate pentagon */}
-      <polygon points="250,430 263,419 263,409 237,409 237,419" fill="white" />
-      {/* Base runner indicators */}
-      {runners.first  && <circle cx="365" cy="317" r="10" fill="#ff4444" opacity="0.85" />}
-      {runners.second && <circle cx="250" cy="213" r="10" fill="#ff4444" opacity="0.85" />}
-      {runners.third  && <circle cx="135" cy="317" r="10" fill="#ff4444" opacity="0.85" />}
-      {/* Ball destination indicator */}
+      {showTrajectory && (
+        <path
+          d={pathD}
+          fill="none"
+          stroke="rgba(255,255,255,0.55)"
+          strokeWidth="1.8"
+          strokeDasharray="5 4"
+          strokeLinecap="round"
+        />
+      )}
+      <Baseball x={dest.x} y={dest.y} />
+    </g>
+  )
+}
+
+function BaseballField({ runners = {}, ballDestination, playType }) {
+  return (
+    <g>
+      {/* 1 — Outfield grass: proper sector shape (circular arc centered at home) */}
+      <path d="M 250 420 L 93 279 A 211 211 0 0 1 407 279 Z" fill="#2d5a1b" />
+
+      {/* 2 — Infield dirt circle */}
+      <circle cx="250" cy="317" r="100" fill="#c8a96e" />
+
+      {/* 3 — Infield grass diamond (drawn on top of dirt — no clipPath needed) */}
+      <polygon points="250,213 365,317 250,420 135,317" fill="#3a7a28" />
+
+      {/* 4 — Base paths */}
+      <line x1="250" y1="420" x2="365" y2="317" stroke="#b89a5a" strokeWidth="2" />
+      <line x1="365" y1="317" x2="250" y2="213" stroke="#b89a5a" strokeWidth="2" />
+      <line x1="250" y1="213" x2="135" y2="317" stroke="#b89a5a" strokeWidth="2" />
+      <line x1="135" y1="317" x2="250" y2="420" stroke="#b89a5a" strokeWidth="2" />
+
+      {/* 5 — Foul lines (match outfield corner points) */}
+      <line x1="250" y1="420" x2="93"  y2="279" stroke="white" strokeWidth="1.5" opacity="0.55" />
+      <line x1="250" y1="420" x2="407" y2="279" stroke="white" strokeWidth="1.5" opacity="0.55" />
+
+      {/* 6 — Outfield wall */}
+      <path d="M 93 279 A 211 211 0 0 1 407 279" fill="none" stroke="#6b4c2a" strokeWidth="9" strokeLinecap="round" />
+
+      {/* 7 — Pitcher's mound */}
+      <ellipse cx="250" cy="321" rx="13" ry="10" fill="#b8996e" stroke="#a08050" strokeWidth="0.5" />
+
+      {/* 8 — Bases (white rotated squares) */}
+      <rect x="-7" y="-7" width="14" height="14" fill="white" rx="1" transform="translate(365,317) rotate(45)" />
+      <rect x="-7" y="-7" width="14" height="14" fill="white" rx="1" transform="translate(250,213) rotate(45)" />
+      <rect x="-7" y="-7" width="14" height="14" fill="white" rx="1" transform="translate(135,317) rotate(45)" />
+
+      {/* 9 — Home plate pentagon */}
+      <polygon points="250,431 262,421 262,411 238,411 238,421" fill="white" />
+
+      {/* 10 — Base runner indicators (offset from bag so they're visible alongside bases) */}
+      {runners.first  && <circle cx="382" cy="300" r="9" fill="#f97316" opacity="0.95" stroke="white" strokeWidth="1" />}
+      {runners.second && <circle cx="250" cy="196" r="9" fill="#f97316" opacity="0.95" stroke="white" strokeWidth="1" />}
+      {runners.third  && <circle cx="118" cy="300" r="9" fill="#f97316" opacity="0.95" stroke="white" strokeWidth="1" />}
+
+      {/* 11 — Ball indicator */}
+      <BallIndicator ballDestination={ballDestination} playType={playType} />
     </g>
   )
 }
@@ -120,6 +190,8 @@ export default function Field({
   correctZones = {},        // { SS: 'relay-lf-to-2b', ... }
   baseState = {},
   myPosition = null,        // highlight only this position if set
+  ballDestination = null,   // where the ball was hit (lf, cf, rf, infield, etc.)
+  playType = null,          // fly_ball, ground_ball, steal, etc.
 }) {
   const svgRef = useRef(null)
   const [dragging, setDragging] = useState(null) // { pos, startSvgX, startSvgY }
@@ -178,7 +250,7 @@ export default function Field({
       onPointerUp={handlePointerUp}
       onPointerLeave={handlePointerUp}
     >
-      <BaseballField runners={baseState} />
+      <BaseballField runners={baseState} ballDestination={ballDestination} playType={playType} />
 
       {/* Zone hints after answering */}
       {answered && quizPositions.map(pos => {
