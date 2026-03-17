@@ -17,6 +17,7 @@ const PLAY_TYPE_ICONS = {
   bunt:        '🎯',
   wild_pitch:  '💥',
   pickoff:     '🎣',
+  rundown:     '↔️',
 }
 
 export default function DefensiveQuiz({ mode = 'random', myPosition = null, teamConfig, onBack, onScoreUpdate }) {

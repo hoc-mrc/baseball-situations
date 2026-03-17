@@ -9,9 +9,9 @@ export const DEFAULT_POSITIONS = {
   '2B': { x: 308, y: 267 },
   SS:   { x: 192, y: 267 },
   '3B': { x: 163, y: 292 },
-  LF:   { x: 115, y: 158 },
-  CF:   { x: 250, y: 118 },
-  RF:   { x: 385, y: 158 },
+  LF:   { x: 130, y: 185 },
+  CF:   { x: 250, y: 165 },
+  RF:   { x: 370, y: 185 },
 }
 
 const POSITION_COLORS = {

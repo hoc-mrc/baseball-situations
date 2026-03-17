@@ -786,12 +786,37 @@ export const SITUATIONS = [
   },
 
   // ══════════════════════════════════════════════════════════════════
-  // SECTION 17 — CATCHER BACK-PICK
+  // SECTION 17 — RUNDOWN
+  // ══════════════════════════════════════════════════════════════════
+  {
+    id: 'rundown-runner-3b',
+    title: 'Rundown: Runner on 3B',
+    section: '17.1',
+    baseState: { first: false, second: false, third: true },
+    outs: 'any',
+    playType: 'rundown',
+    ballDestination: 'home',
+    ballDescription: 'Runner on 3B gets caught in a pickle — C chases the runner back toward 3B',
+    positions: {
+      P:   go('cover-home',      'Sprint to home plate; be ready to receive the throw and apply the tag', true, null, 'One fielder must always be at the plate in a rundown — P is closest and gets there first.'),
+      C:   hold('C',             'Initiate the rundown; chase the runner toward 3B; throw to 3B when committed'),
+      '1B':go('p-backup-home',   'Sprint in to back up home plate behind P', true, null, 'If P misses the catch or the runner breaks back to home, you stop the ball from rolling away.'),
+      '2B':hold('2B',            'Stay near 2B; alert if other runners try to advance'),
+      SS:  go('ss-backup-3b',    'Trail behind 3B on the throw-line extension to back up overthrows', true, null, 'Position behind 3B on the home→3B line extension — stops any wild throw from rolling into the outfield.'),
+      '3B':hold('3B',            'Hold at 3B; receive the throw; apply the tag and run the runner back if needed'),
+      LF:  go('lf-back-3b',      'Come in shallow to back up 3B from the outfield side', true, null, 'LF moves toward 3B as second line of defense — catches any overthrow that gets past SS.'),
+      CF:  hold('CF',            'Hold position'),
+      RF:  hold('RF',            'Hold position'),
+    },
+  },
+
+  // ══════════════════════════════════════════════════════════════════
+  // SECTION 18 — CATCHER BACK-PICK
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'backpick-1b',
     title: 'Catcher Back-Pick to First',
-    section: '17.1',
+    section: '18.1',
     baseState: { first: true, second: false, third: false },
     outs: 'any',
     playType: 'pickoff',

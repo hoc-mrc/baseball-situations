@@ -22,9 +22,9 @@ export const ZONES = {
   'default-2B': { x: 308, y: 267, r: 25 },
   'default-SS': { x: 192, y: 267, r: 25 },
   'default-3B': { x: 163, y: 292, r: 28 },
-  'default-LF': { x: 115, y: 158, r: 30 },
-  'default-CF': { x: 250, y: 118, r: 30 },
-  'default-RF': { x: 385, y: 158, r: 30 },
+  'default-LF': { x: 130, y: 185, r: 30 },
+  'default-CF': { x: 250, y: 165, r: 30 },
+  'default-RF': { x: 370, y: 185, r: 30 },
 
   // ── BASE COVERAGE ──────────────────────────────────────────────────────
   'cover-1b':   { x: 365, y: 317, r: 45 },
