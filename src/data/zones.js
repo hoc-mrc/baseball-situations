@@ -33,27 +33,27 @@ export const ZONES = {
   'cover-home': { x: 250, y: 420, r: 45 },
 
   // ── RELAY positions ────────────────────────────────────────────────────
-  // Relay between outfield and 2B (~40% from OF toward 2B, on the throw line)
-  'relay-lf-to-2b': { x: 169, y: 180, r: 58 },  // LF(115,158)→2B(250,213) at 40%
-  'relay-cf-to-2b': { x: 250, y: 156, r: 58 },  // CF(250,118)→2B(250,213) at 40%
-  'relay-rf-to-2b': { x: 331, y: 180, r: 58 },  // RF(385,158)→2B(250,213) at 40%
+  // Relay at 50% midpoint between OF source and target base (on the throw line)
+  'relay-lf-to-2b': { x: 182, y: 185, r: 58 },  // LF(115,158)↔2B(250,213)
+  'relay-cf-to-2b': { x: 250, y: 165, r: 58 },  // CF(250,118)↔2B(250,213)
+  'relay-rf-to-2b': { x: 317, y: 185, r: 58 },  // RF(385,158)↔2B(250,213)
 
-  // Relay between outfield and 3B (~40% from OF toward 3B, on the throw line)
-  'relay-lf-to-3b': { x: 123, y: 222, r: 58 },  // LF(115,158)→3B(135,317) at 40%
-  'relay-cf-to-3b': { x: 204, y: 198, r: 58 },  // CF(250,118)→3B(135,317) at 40%
-  'relay-rf-to-3b': { x: 285, y: 222, r: 58 },  // RF(385,158)→3B(135,317) at 40%
+  // Relay between outfield and 3B (50% midpoint)
+  'relay-lf-to-3b': { x: 125, y: 237, r: 58 },  // LF(115,158)↔3B(135,317)
+  'relay-cf-to-3b': { x: 192, y: 217, r: 58 },  // CF(250,118)↔3B(135,317)
+  'relay-rf-to-3b': { x: 260, y: 237, r: 58 },  // RF(385,158)↔3B(135,317)
 
-  // Relay/cutoff between outfield and home (infield cutoff ~65% from OF toward home)
-  'relay-lf-to-home': { x: 200, y: 328, r: 58 },  // LF→home cutoff, infield
-  'relay-cf-to-home': { x: 250, y: 315, r: 58 },  // CF→home cutoff, infield
-  'relay-rf-to-home': { x: 300, y: 328, r: 58 },  // RF→home cutoff, infield
+  // Relay/cutoff between outfield and home (50% midpoint — shallow outfield)
+  'relay-lf-to-home': { x: 182, y: 289, r: 58 },  // LF(115,158)↔home(250,420)
+  'relay-cf-to-home': { x: 250, y: 269, r: 58 },  // CF(250,118)↔home(250,420)
+  'relay-rf-to-home': { x: 318, y: 289, r: 58 },  // RF(385,158)↔home(250,420)
 
   // ── PITCHER BACKUPS ────────────────────────────────────────────────────
-  // P behind the target on extension of the throw line
-  'p-backup-2b':   { x: 260, y: 248, r: 55 },  // behind 2B on CF relay extension
+  // P behind the target — extension of the throw line PAST the target base
+  'p-backup-2b':   { x: 250, y: 261, r: 55 },  // behind 2B, extension of CF relay→2B
   'p-backup-3b':   { x: 95,  y: 345, r: 55 },  // behind 3B toward LF foul line
-  'p-backup-home': { x: 250, y: 385, r: 55 },  // behind home
-  'p-backup-1b':   { x: 405, y: 325, r: 55 },  // behind 1B past right side
+  'p-backup-home': { x: 250, y: 460, r: 55 },  // behind home plate, past y=420
+  'p-backup-1b':   { x: 410, y: 317, r: 55 },  // behind 1B on 3B→1B throw extension
   'p-cover-home':  { x: 250, y: 400, r: 50 },  // pitcher covers home (WP)
 
   // ── CATCHER BACKUP ─────────────────────────────────────────────────────
