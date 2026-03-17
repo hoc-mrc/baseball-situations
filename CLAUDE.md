@@ -20,6 +20,12 @@ No React Router. A top-level `mode` state in `App.jsx` controls which screen ren
 - Home plate: `(250, 420)`, 2B: `(250, 213)`, 1B: `(365, 317)`, 3B: `(135, 317)`
 - Field is oriented with home at bottom, outfield at top
 - All player positions and zone centers use these SVG coordinates
+- Outfield fence: `FENCE_R = 330` (radius from home plate); fence corners at approx `(4, 200)` and `(496, 200)`
+
+**Default fielder positions** (`src/components/Field.jsx` → `DEFAULT_POSITIONS`):
+- Infield: P `(250,325)`, C `(250,408)`, 1B `(336,292)`, 2B `(308,267)`, SS `(192,267)`, 3B `(163,292)`
+- Outfield: LF `(130,185)`, CF `(250,165)`, RF `(370,185)`
+- 1B and 3B stand off-bag between their base and the middle infield (not on the bag)
 
 ### Zone hit detection
 Each zone in `src/data/zones.js` has `{ x, y, r }`. A player's answer is correct if they drop within radius `r` of center `(x, y)`.
@@ -55,9 +61,15 @@ const go   = (zone, desc, quiz = true, coachDecision = null, reason = '') => ({ 
 ### Ball positions (`src/components/Field.jsx` → `BALL_POSITIONS`)
 Named positions used for `ballDestination` in situations:
 - Standard: `lf`, `cf`, `rf`, `infield`, `1b`, `2b`, `3b`, `home`
-- Variety: `lf-gap`, `lf-line`, `lf-shallow`, `cf-left`, `cf-right`, `rf-gap`, `rf-line`, `rf-shallow`
+- Outfield variety: `lf-gap`, `lf-line`, `lf-shallow`, `cf-left`, `cf-right`, `rf-gap`, `rf-line`, `rf-shallow`
+- Ground ball: `gb-ss`, `gb-2b`, `gb-3b`, `gb-1b` (ball appears at the fielding position)
 
 Use variety positions to avoid the ball always appearing directly on the fielder's default position.
+
+### Play types
+Used for `playType` in situations (controls ball trajectory and icon in quiz):
+`fly_ball`, `ground_ball`, `single`, `steal`, `bunt`, `wild_pitch`, `pickoff`, `rundown`
+- Batted-ball trajectory shown for: `fly_ball`, `single`, `ground_ball`, `bunt`
 
 ---
 
@@ -69,6 +81,8 @@ These differ from higher-level baseball and must be respected in situations:
 - **LF coverage**: LF only backs up 3B or 2B — never backs up home plate.
 - **Pitcher role on home throws**: P sprints to back up home on any throw from the outfield.
 - **CF priority**: CF calls off all other outfielders; outfielders call off all infielders on fly balls.
+- **Fly balls — not caught by default**: Most fly ball situations should be written as the ball **dropping in** (not caught). The runner was running on contact and reaches 3B from 1B on a deep ball. Use relay zones aimed at 3B, P backs up 3B, C covers home. Exception: tag-up situations (runner on 2B or 3B) are written as caught — runner tags and advances one base.
+- **CF backup zones are destination-specific**: Use `cf-back-lf-gap`, `cf-back-lf-line`, `cf-back-lf-shallow`, `cf-back-rf-gap`, etc. — not the generic `cf-back-lf`/`cf-back-rf`. Each zone is anchored 45px beyond the specific ball landing spot.
 
 ---
 
