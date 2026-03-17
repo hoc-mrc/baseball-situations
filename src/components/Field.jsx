@@ -5,10 +5,10 @@ import { ZONES } from '../data/zones.js'
 export const DEFAULT_POSITIONS = {
   P:    { x: 250, y: 325 },
   C:    { x: 250, y: 408 },
-  '1B': { x: 378, y: 303 },
+  '1B': { x: 336, y: 292 },
   '2B': { x: 308, y: 267 },
   SS:   { x: 192, y: 267 },
-  '3B': { x: 122, y: 303 },
+  '3B': { x: 163, y: 292 },
   LF:   { x: 115, y: 158 },
   CF:   { x: 250, y: 118 },
   RF:   { x: 385, y: 158 },
@@ -46,6 +46,8 @@ const BALL_POSITIONS = {
   'rf-shallow':{ x: 370, y: 205 },
   'gb-ss':     { x: 188, y: 272 },
   'gb-2b':     { x: 312, y: 272 },
+  'gb-3b':     { x: 163, y: 292 },
+  'gb-1b':     { x: 336, y: 292 },
 }
 
 // Play types that have a batted-ball trajectory from home plate

@@ -18,10 +18,10 @@ export const ZONES = {
   // ── DEFAULT / HOLD positions ───────────────────────────────────────────
   'default-P':  { x: 250, y: 325, r: 28 },
   'default-C':  { x: 250, y: 408, r: 25 },
-  'default-1B': { x: 378, y: 303, r: 25 },
+  'default-1B': { x: 336, y: 292, r: 28 },
   'default-2B': { x: 308, y: 267, r: 25 },
   'default-SS': { x: 192, y: 267, r: 25 },
-  'default-3B': { x: 122, y: 303, r: 25 },
+  'default-3B': { x: 163, y: 292, r: 28 },
   'default-LF': { x: 115, y: 158, r: 30 },
   'default-CF': { x: 250, y: 118, r: 30 },
   'default-RF': { x: 385, y: 158, r: 30 },
@@ -60,10 +60,16 @@ export const ZONES = {
   'c-backup-1b': { x: 358, y: 368, r: 55 },    // C follows runner to back up 1B
 
   // ── OUTFIELDER BACKUPS ─────────────────────────────────────────────────
-  // CF backs up LF: ball home(250,420)→LF(115,158), behind LF in that direction
-  'cf-back-lf':   { x: 92,  y: 120, r: 55 },
-  // CF backs up RF: ball home(250,420)→RF(385,158), behind RF in that direction
-  'cf-back-rf':   { x: 405, y: 118, r: 55 },
+  // CF backs up LF: zones per ball landing spot (45px beyond ball in home→ball direction)
+  'cf-back-lf':         { x: 92,  y: 120, r: 55 },  // lf default (130,148)
+  'cf-back-lf-gap':     { x: 164, y: 84,  r: 58 },  // lf-gap (175,128)
+  'cf-back-lf-line':    { x: 47,  y: 159, r: 58 },  // lf-line (75,195)
+  'cf-back-lf-shallow': { x: 108, y: 166, r: 58 },  // lf-shallow (130,205)
+  // CF backs up RF: zones per ball landing spot
+  'cf-back-rf':         { x: 405, y: 118, r: 55 },  // rf default (370,148)
+  'cf-back-rf-gap':     { x: 336, y: 84,  r: 58 },  // rf-gap (325,128)
+  'cf-back-rf-line':    { x: 453, y: 159, r: 58 },  // rf-line (425,195)
+  'cf-back-rf-shallow': { x: 392, y: 166, r: 58 },  // rf-shallow (370,205)
   // LF backs up CF from left: ball home→CF(250,118), LF behind CF on left side
   'lf-back-cf':   { x: 185, y: 100, r: 55 },
   // RF backs up CF from right: RF behind CF on right side
