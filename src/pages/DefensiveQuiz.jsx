@@ -30,6 +30,7 @@ export default function DefensiveQuiz({ mode = 'random', myPosition = null, team
   const [situationNum, setSituationNum]     = useState(1)
   const [correctCount, setCorrectCount]     = useState(0)
   const [totalAnswered, setTotalAnswered]   = useState(0)
+  const [wrongSituations, setWrongSituations] = useState([]) // { situation, wrongPositions }
 
   const sessionDone = currentIndex >= queue.length
   const situation = queue[Math.min(currentIndex, queue.length - 1)]
@@ -61,6 +62,7 @@ export default function DefensiveQuiz({ mode = 'random', myPosition = null, team
     setAnswered(true)
     // Score: +1 per correct position
     let gained = 0
+    const wrongPositions = []
     quizPositions.forEach(pos => {
       const zoneName = situation.positions[pos]?.zone
       if (!zoneName) return
@@ -69,11 +71,18 @@ export default function DefensiveQuiz({ mode = 'random', myPosition = null, team
       const { x, y } = playerPositions[pos] || DEFAULT_POSITIONS[pos]
       const dx = x - zone.x
       const dy = y - zone.y
-      if (Math.sqrt(dx * dx + dy * dy) <= zone.r) gained++
+      if (Math.sqrt(dx * dx + dy * dy) <= zone.r) {
+        gained++
+      } else {
+        wrongPositions.push(pos)
+      }
     })
     setScore(s => s + gained)
     setCorrectCount(c => c + gained)
     setTotalAnswered(t => t + quizPositions.length)
+    if (wrongPositions.length > 0) {
+      setWrongSituations(prev => [...prev, { situation, wrongPositions }])
+    }
   }
 
   function handleNext() {
@@ -109,12 +118,37 @@ export default function DefensiveQuiz({ mode = 'random', myPosition = null, team
   if (sessionDone) {
     const pct = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 0
     return (
-      <div className="flex flex-col min-h-dvh max-w-lg mx-auto px-3 py-3 gap-4 items-center justify-center text-center">
-        <div className="text-5xl">⭐</div>
-        <div className="text-white text-2xl font-bold">Session Complete!</div>
-        <div className="text-gray-300 text-lg">{correctCount} / {totalAnswered} correct ({pct}%)</div>
-        <div className="text-gray-400 text-sm">Score: {score} points</div>
-        <div className="flex flex-col gap-3 w-full mt-4">
+      <div className="flex flex-col min-h-dvh max-w-lg mx-auto px-3 py-4 gap-4">
+        <div className="text-center">
+          <div className="text-4xl mb-2">⭐</div>
+          <div className="text-white text-2xl font-bold">Session Complete!</div>
+          <div className="text-gray-300 text-lg mt-1">{correctCount} / {totalAnswered} correct ({pct}%)</div>
+          <div className="text-gray-400 text-sm">Score: {score} points</div>
+        </div>
+
+        {/* Wrong answer review */}
+        {wrongSituations.length > 0 && (
+          <div className="flex flex-col gap-2">
+            <div className="text-orange-400 font-bold text-sm">Review for next time:</div>
+            {wrongSituations.map(({ situation: sit, wrongPositions }, i) => (
+              <div key={i} className="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2">
+                <div className="text-white font-semibold text-sm mb-1.5">{sit.title}</div>
+                {wrongPositions.map(pos => (
+                  <div key={pos} className="flex items-start gap-2 mt-1">
+                    <span className="text-xs bg-red-700 rounded px-1.5 py-0.5 font-bold text-white min-w-[28px] text-center shrink-0">{pos}</span>
+                    <span className="text-gray-300 text-xs">{sit.positions[pos]?.description}</span>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {wrongSituations.length === 0 && (
+          <div className="text-green-400 text-center font-bold">Perfect session! 🎉</div>
+        )}
+
+        <div className="flex flex-col gap-3 mt-2">
           <button
             onClick={() => {
               setQueue(pickTen(SITUATIONS))
@@ -123,6 +157,7 @@ export default function DefensiveQuiz({ mode = 'random', myPosition = null, team
               setScore(0)
               setCorrectCount(0)
               setTotalAnswered(0)
+              setWrongSituations([])
             }}
             className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl text-base"
           >
