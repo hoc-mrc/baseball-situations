@@ -44,6 +44,8 @@ const BALL_POSITIONS = {
   'cf-right':  { x: 310, y: 118 },
   'lf-shallow':{ x: 130, y: 205 },
   'rf-shallow':{ x: 370, y: 205 },
+  'gb-ss':     { x: 188, y: 272 },
+  'gb-2b':     { x: 312, y: 272 },
 }
 
 // Play types that have a batted-ball trajectory from home plate
@@ -166,9 +168,9 @@ function BaseballField({ runners = {}, ballDestination, playType }) {
       <rect x="225" y="409" width="12" height="20" fill="none" stroke="white" strokeWidth="0.8" opacity="0.4" />
 
       {/* 11 — Runner indicators (save public/runner.png — must be transparent PNG) */}
-      {runners.first  && <image href="/runner.png" x="371" y="289" width="22" height="22" />}
-      {runners.second && <image href="/runner.png" x="239" y="185" width="22" height="22" />}
-      {runners.third  && <image href="/runner.png" x="107" y="289" width="22" height="22" />}
+      {runners.first  && <image href="/runner.png" x="349" y="267" width="66" height="66" />}
+      {runners.second && <image href="/runner.png" x="217" y="163" width="66" height="66" />}
+      {runners.third  && <image href="/runner.png" x="85"  y="267" width="66" height="66" />}
 
       {/* 12 — Ball indicator */}
       <BallIndicator ballDestination={ballDestination} playType={playType} />
