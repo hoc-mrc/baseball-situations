@@ -60,10 +60,16 @@ export const ZONES = {
   'c-backup-1b': { x: 358, y: 368, r: 55 },    // C follows runner to back up 1B
 
   // ── OUTFIELDER BACKUPS ─────────────────────────────────────────────────
-  'cf-back-lf':   { x: 183, y: 135, r: 55 },   // CF backs up LF
-  'cf-back-rf':   { x: 317, y: 135, r: 55 },   // CF backs up RF
+  // CF backs up LF: ball home(250,420)→LF(115,158), behind LF in that direction
+  'cf-back-lf':   { x: 92,  y: 120, r: 55 },
+  // CF backs up RF: ball home(250,420)→RF(385,158), behind RF in that direction
+  'cf-back-rf':   { x: 405, y: 118, r: 55 },
+  // LF backs up CF from left: ball home→CF(250,118), LF behind CF on left side
+  'lf-back-cf':   { x: 185, y: 100, r: 55 },
+  // RF backs up CF from right: RF behind CF on right side
+  'rf-back-cf':   { x: 315, y: 100, r: 55 },
   'lf-back-3b':   { x: 108, y: 272, r: 55 },   // LF backs up 3B
-  'lf-back-home': { x: 205, y: 440, r: 55 },   // LF backs up home
+  'lf-back-home': { x: 205, y: 440, r: 55 },   // LF backs up home (not used in quiz)
   'cf-back-2b':   { x: 250, y: 175, r: 55 },   // CF backs up 2B
   'rf-back-1b':   { x: 395, y: 248, r: 55 },   // RF backs up 1B
   'rf-back-2b':   { x: 320, y: 190, r: 55 },   // RF backs up 2B area
@@ -74,7 +80,8 @@ export const ZONES = {
   'of-safety-right': { x: 342, y: 272, r: 58 },
 
   // ── SS / 2B BACKUP FOR 3B ──────────────────────────────────────────────
-  'ss-backup-3b': { x: 152, y: 300, r: 55 },
+  // SS backs up 3B: C(250,420)→3B(135,317), behind 3B on that throw line
+  'ss-backup-3b': { x: 102, y: 287, r: 55 },
 
   // ── BUNT POSITIONS ─────────────────────────────────────────────────────
   'charge-bunt-p':  { x: 250, y: 365, r: 62 }, // P charges toward home
