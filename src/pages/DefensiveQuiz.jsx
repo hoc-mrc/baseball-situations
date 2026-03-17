@@ -103,14 +103,24 @@ export default function DefensiveQuiz({ mode = 'random', myPosition = null, team
 
   const correctZones = buildCorrectZones()
 
-  // Has the player placed all quiz positions away from default?
+  // Has the player placed all quiz positions? A position counts as ready if:
+  // (a) it's been dragged >8px from default, OR
+  // (b) its default position is already inside the correct zone (no drag needed)
   const allMoved = quizPositions.every(pos => {
     const curr = playerPositions[pos]
     const def  = DEFAULT_POSITIONS[pos]
     if (!curr) return false
     const dx = curr.x - def.x
     const dy = curr.y - def.y
-    return Math.sqrt(dx * dx + dy * dy) > 8
+    if (Math.sqrt(dx * dx + dy * dy) > 8) return true
+    // Check if default is already within the correct zone
+    const zoneName = correctZones[pos]
+    if (!zoneName) return false
+    const zone = ZONES[zoneName]
+    if (!zone) return false
+    const zDx = def.x - zone.x
+    const zDy = def.y - zone.y
+    return Math.sqrt(zDx * zDx + zDy * zDy) <= zone.r
   })
 
   const icon = PLAY_TYPE_ICONS[situation.playType] || '⚾'
@@ -185,7 +195,7 @@ export default function DefensiveQuiz({ mode = 'random', myPosition = null, team
       {/* Scoreboard */}
       <Scoreboard
         baseState={situation.baseState}
-        outs={0}
+        outs={situation.outs === '2' ? 2 : situation.outs === '0-1' ? 1 : 0}
         situationNum={situationNum}
         total={queue.length}
         score={score}
@@ -212,8 +222,8 @@ export default function DefensiveQuiz({ mode = 'random', myPosition = null, team
       {!answered && (
         <div className="text-center text-sm text-gray-300">
           {mode === 'position'
-            ? <>Drag <span className="text-yellow-300 font-bold">{myPosition}</span> to the correct position</>
-            : <>Drag the <span className="text-yellow-300 font-bold">highlighted players</span> ({quizPositions.join(', ')}) to their correct spots</>
+            ? <>Tap or drag <span className="text-yellow-300 font-bold">{myPosition}</span> to the correct position</>
+            : <>Tap a <span className="text-yellow-300 font-bold">highlighted player</span> ({quizPositions.join(', ')}), then tap their spot — or drag</>
           }
         </div>
       )}

@@ -109,14 +109,14 @@ export const BASERUNNING_QUESTIONS = [
   {
     id: 'br-wp-runner-3b',
     category: 'Wild Pitch',
-    situation: 'You are on 3B. There is 1 out. The catcher drops the ball and it rolls toward the dugout.',
+    situation: 'You are on 3B taking your secondary lead. There is 1 out. The pitch bounces hard away from the catcher and rolls toward the dugout.',
     question: 'What do you do?',
     choices: [
-      { id: 'run',  label: 'Go immediately — run home', correct: true },
-      { id: 'hold', label: 'Hold at 3B and wait', correct: false },
-      { id: 'tag',  label: 'Tag up', correct: false },
+      { id: 'read',  label: 'Read the ball, look to your 3B coach — if they send you, commit fully and slide', correct: true },
+      { id: 'run',   label: 'Break for home immediately without looking at the coach', correct: false },
+      { id: 'hold',  label: 'Hold at 3B and wait for the next pitch', correct: false },
     ],
-    explanation: 'A wild pitch or passed ball with a runner on 3B is your chance to score! Go immediately. The catcher must chase the ball down and make a throw — you should beat it if you read the wild pitch quickly.',
+    explanation: 'On a wild pitch from 3B, you should already be in your secondary lead. Read how far the ball gets away and look to your 3B coach. If the coach sends you, commit fully — no hesitating halfway — and slide at home. Hesitating or stopping halfway is the worst outcome: you\'re caught in no man\'s land.',
   },
   {
     id: 'br-wp-runner-2b',

@@ -21,7 +21,8 @@ export default function BaserunningQuiz({ onBack }) {
   const [score, setScore]      = useState(0)
   const [total, setTotal]      = useState(0)
 
-  const question = queue[index % queue.length]
+  const sessionDone = index >= queue.length
+  const question = queue[Math.min(index, queue.length - 1)]
 
   function handleSelect(choice) {
     if (answered) return
@@ -39,12 +40,44 @@ export default function BaserunningQuiz({ onBack }) {
 
   const categoryClass = CATEGORY_COLORS[question.category] || 'bg-gray-800 border-gray-600 text-gray-300'
 
+  if (sessionDone) {
+    const pct = total > 0 ? Math.round((score / total) * 100) : 0
+    return (
+      <div className="flex flex-col min-h-dvh max-w-lg mx-auto px-4 py-4 gap-4">
+        <div className="text-center mt-8">
+          <div className="text-4xl mb-2">⭐</div>
+          <div className="text-white text-2xl font-bold">Session Complete!</div>
+          <div className="text-gray-300 text-lg mt-1">{score} / {total} correct ({pct}%)</div>
+        </div>
+        <div className="flex flex-col gap-3 mt-4">
+          <button
+            onClick={() => {
+              setIndex(0)
+              setScore(0)
+              setTotal(0)
+              setSelected(null)
+              setAnswered(false)
+            }}
+            className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl text-base"
+          >
+            Play Again
+          </button>
+          <button onClick={onBack} className="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 rounded-xl text-base">
+            Back to Menu
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col min-h-dvh max-w-lg mx-auto px-4 py-4 gap-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <button onClick={onBack} className="text-gray-400 hover:text-white text-xl">←</button>
-        <span className="text-gray-400 text-sm font-semibold">Baserunning Quiz</span>
+        <span className="text-gray-400 text-sm font-semibold">
+          Baserunning Quiz <span className="text-gray-600">{index + 1}/{queue.length}</span>
+        </span>
         <div className="text-yellow-400 font-bold text-sm">⭐ {score}/{total}</div>
       </div>
 

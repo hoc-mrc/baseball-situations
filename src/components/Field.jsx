@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from 'react'
+import { useRef, useState, useCallback, useEffect } from 'react'
 import { ZONES } from '../data/zones.js'
 
 // Default positions for each player on the field before the pitch
@@ -105,11 +105,13 @@ function BallIndicator({ ballDestination, playType }) {
 
 function BaseballField({ runners = {}, ballDestination, playType }) {
   // Outfield mowing stripes — concentric arc bands centered on home plate
-  // Unit vectors along each foul line: (93,279) and (407,279) are r=211 from (250,420)
+  // Foul line unit vectors derived from home(250,420)→3B(135,317) and home→1B(365,317)
+  // At r=330 those give fence corners at (4,200) and (496,200)
   const HX = 250, HY = 420
   const LX = -0.7440, LY = -0.6682   // left foul line direction
   const RX =  0.7440, RY = -0.6682   // right foul line direction
-  const GRASS_R = 188                  // inner edge of warning track
+  const FENCE_R = 330                  // radius of outfield wall (behind LF/CF/RF at ~294–302)
+  const GRASS_R = FENCE_R - 20        // inner edge of warning track
   const N = 9
   const stripes = Array.from({ length: N }, (_, i) => {
     const r0 = (i / N) * GRASS_R
@@ -132,7 +134,7 @@ function BaseballField({ runners = {}, ballDestination, playType }) {
       <rect x="0" y="0" width="500" height="480" fill="#183d0e" />
 
       {/* 1 — Warning track sector (brown band at outer edge) */}
-      <path d="M 250 420 L 93 279 A 211 211 0 0 1 407 279 Z" fill="#9a7040" />
+      <path d={`M ${HX} ${HY} L 4 200 A ${FENCE_R} ${FENCE_R} 0 0 1 496 200 Z`} fill="#9a7040" />
 
       {/* 2 — Outfield grass with mowing stripes */}
       {stripes}
@@ -150,11 +152,11 @@ function BaseballField({ runners = {}, ballDestination, playType }) {
       <line x1="135" y1="317" x2="250" y2="420" stroke="#a0804a" strokeWidth="2" />
 
       {/* 6 — Foul lines */}
-      <line x1="250" y1="420" x2="93"  y2="279" stroke="white" strokeWidth="1.5" opacity="0.6" />
-      <line x1="250" y1="420" x2="407" y2="279" stroke="white" strokeWidth="1.5" opacity="0.6" />
+      <line x1="250" y1="420" x2="4"   y2="200" stroke="white" strokeWidth="1.5" opacity="0.6" />
+      <line x1="250" y1="420" x2="496" y2="200" stroke="white" strokeWidth="1.5" opacity="0.6" />
 
       {/* 7 — Outfield wall */}
-      <path d="M 93 279 A 211 211 0 0 1 407 279" fill="none" stroke="#4a2808" strokeWidth="10" strokeLinecap="round" />
+      <path d={`M 4 200 A ${FENCE_R} ${FENCE_R} 0 0 1 496 200`} fill="none" stroke="#4a2808" strokeWidth="10" strokeLinecap="round" />
 
       {/* 8 — Pitcher's mound */}
       <ellipse cx="250" cy="321" rx="14" ry="11" fill="#b88848" stroke="#987030" strokeWidth="1" />
@@ -180,24 +182,26 @@ function BaseballField({ runners = {}, ballDestination, playType }) {
   )
 }
 
-function PlayerIcon({ id, x, y, label, color, draggable, answered, correct, onPointerDown }) {
+function PlayerIcon({ x, y, label, color, draggable, answered, correct, selected }) {
   const isCorrect = answered && correct === true
   const isWrong   = answered && correct === false
 
-  const ringColor = draggable && !answered ? '#fff' : isCorrect ? '#22c55e' : isWrong ? '#ef4444' : 'transparent'
+  const ringColor = isCorrect ? '#22c55e' : isWrong ? '#ef4444' : 'transparent'
   const bgColor   = draggable && !answered ? color : isCorrect ? '#22c55e' : isWrong ? '#ef4444' : '#475569'
   const opacity   = (!draggable && !answered) ? 0.45 : 1
 
   return (
     <g
       transform={`translate(${x}, ${y})`}
-      style={{ cursor: draggable && !answered ? 'grab' : 'default', opacity }}
-      onPointerDown={draggable && !answered ? onPointerDown : undefined}
-      className={draggable && !answered ? 'player-icon' : 'player-icon not-draggable'}
+      style={{ cursor: draggable && !answered ? 'pointer' : 'default', opacity }}
     >
-      {/* Glow ring for draggable quiz positions */}
+      {/* Selected pulse ring */}
+      {selected && !answered && (
+        <circle r="26" fill="none" stroke="#fbbf24" strokeWidth="3" opacity="0.9" />
+      )}
+      {/* Dashed ring for draggable quiz positions */}
       {draggable && !answered && (
-        <circle r="20" fill="none" stroke={ringColor} strokeWidth="2.5" strokeDasharray="4 2" />
+        <circle r="20" fill="none" stroke={selected ? '#fbbf24' : '#fff'} strokeWidth={selected ? 3 : 2.5} strokeDasharray={selected ? undefined : '4 2'} />
       )}
       {/* Result ring after answer */}
       {answered && (
@@ -226,17 +230,24 @@ function PlayerIcon({ id, x, y, label, color, draggable, answered, correct, onPo
 
 export default function Field({
   quizPositions = [],       // positions being tested this round
-  playerPositions,          // { P: {x,y}, C: {x,y}, ... } — current drag positions
+  playerPositions,          // { P: {x,y}, C: {x,y}, ... } — current positions
   onPositionChange,         // (pos, x, y) => void
   answered = false,         // true after Check Answer
   correctZones = {},        // { SS: 'relay-lf-to-2b', ... }
   baseState = {},
   myPosition = null,        // highlight only this position if set
-  ballDestination = null,   // where the ball was hit (lf, cf, rf, infield, etc.)
+  ballDestination = null,   // where the ball was hit
   playType = null,          // fly_ball, ground_ball, steal, etc.
 }) {
-  const svgRef = useRef(null)
-  const [dragging, setDragging] = useState(null) // { pos, startSvgX, startSvgY }
+  const svgRef      = useRef(null)
+  const draggingRef = useRef(null)   // pos string while pointer is down
+  const dragStartRef= useRef(null)   // { x, y } in SVG coords
+  const dragMovedRef= useRef(false)  // true once pointer moved > threshold
+
+  const [selectedPos, setSelectedPos] = useState(null)
+
+  // Clear selection when question is answered
+  useEffect(() => { if (answered) setSelectedPos(null) }, [answered])
 
   const getSVGCoords = useCallback((clientX, clientY) => {
     const svg = svgRef.current
@@ -250,21 +261,61 @@ export default function Field({
     }
   }, [])
 
-  const handlePointerDown = useCallback((pos, e) => {
-    e.preventDefault()
-    e.currentTarget.setPointerCapture(e.pointerId)
-    setDragging(pos)
-  }, [])
+  // Hit-test: which quiz player (if any) is within 22px of SVG coords?
+  const hitTestPlayer = useCallback((svgX, svgY) => {
+    let closest = null, closestDist = 22
+    quizPositions.forEach(pos => {
+      const { x, y } = (playerPositions && playerPositions[pos]) || DEFAULT_POSITIONS[pos]
+      const d = Math.sqrt((svgX - x) ** 2 + (svgY - y) ** 2)
+      if (d < closestDist) { closest = pos; closestDist = d }
+    })
+    return closest
+  }, [quizPositions, playerPositions])
 
-  const handlePointerMove = useCallback((e) => {
-    if (!dragging) return
+  const handlePointerDown = useCallback((e) => {
+    if (answered) return
     e.preventDefault()
     const { x, y } = getSVGCoords(e.clientX, e.clientY)
-    onPositionChange?.(dragging, x, y)
-  }, [dragging, getSVGCoords, onPositionChange])
+    const hit = hitTestPlayer(x, y)
+
+    if (hit) {
+      // Capture to SVG so pointermove/up fire even if pointer leaves SVG
+      svgRef.current?.setPointerCapture(e.pointerId)
+      draggingRef.current  = hit
+      dragStartRef.current = { x, y }
+      dragMovedRef.current = false
+    } else if (selectedPos) {
+      // Tap on field with a player selected → place that player
+      onPositionChange?.(selectedPos, x, y)
+      setSelectedPos(null)
+    }
+  }, [answered, selectedPos, getSVGCoords, hitTestPlayer, onPositionChange])
+
+  const handlePointerMove = useCallback((e) => {
+    if (!draggingRef.current) return
+    e.preventDefault()
+    const { x, y } = getSVGCoords(e.clientX, e.clientY)
+    const start = dragStartRef.current
+    const dist  = Math.sqrt((x - start.x) ** 2 + (y - start.y) ** 2)
+    if (dist > 8) {
+      dragMovedRef.current = true
+      onPositionChange?.(draggingRef.current, x, y)
+    }
+  }, [getSVGCoords, onPositionChange])
 
   const handlePointerUp = useCallback(() => {
-    setDragging(null)
+    const pos = draggingRef.current
+    if (!pos) return
+    if (!dragMovedRef.current) {
+      // Tap on a player: toggle selection
+      setSelectedPos(prev => prev === pos ? null : pos)
+    } else {
+      // Drag completed: clear selection
+      setSelectedPos(null)
+    }
+    draggingRef.current  = null
+    dragMovedRef.current = false
+    dragStartRef.current = null
   }, [])
 
   // Determine correctness of each quiz position
@@ -288,6 +339,7 @@ export default function Field({
       viewBox="0 0 500 480"
       className="w-full max-w-lg mx-auto select-none touch-none"
       style={{ maxHeight: '60vh' }}
+      onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerLeave={handlePointerUp}
@@ -317,15 +369,13 @@ export default function Field({
 
       {/* Players */}
       {positions.map(pos => {
-        const isDraggable = quizPositions.includes(pos)
-        const highlight = myPosition ? pos === myPosition : isDraggable
+        const isDraggable = myPosition ? pos === myPosition : quizPositions.includes(pos)
         const coords = (playerPositions && playerPositions[pos]) || DEFAULT_POSITIONS[pos]
         const correctness = isDraggable ? getCorrectness(pos) : null
 
         return (
           <PlayerIcon
             key={pos}
-            id={pos}
             x={coords.x}
             y={coords.y}
             label={pos}
@@ -333,7 +383,7 @@ export default function Field({
             draggable={isDraggable}
             answered={answered}
             correct={correctness}
-            onPointerDown={(e) => handlePointerDown(pos, e)}
+            selected={selectedPos === pos}
           />
         )
       })}
