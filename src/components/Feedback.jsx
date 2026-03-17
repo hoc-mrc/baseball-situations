@@ -12,6 +12,15 @@ function checkCorrect(pos, playerPositions, correctZones) {
   return Math.sqrt(dx * dx + dy * dy) <= zone.r
 }
 
+function getRuleTip(zoneName) {
+  if (!zoneName) return null
+  if (zoneName.startsWith('relay-')) return '💡 Relay: position halfway between the ball and the throw target'
+  if (zoneName.startsWith('p-backup-') || zoneName.startsWith('ss-backup-') || zoneName.includes('-back-')) return '💡 Backup: get behind the target on the throw line extension'
+  if (zoneName.startsWith('cover-')) return '💡 Coverage: get to the base'
+  if (zoneName.startsWith('charge-bunt-')) return '💡 Charge: attack the bunt aggressively'
+  return null
+}
+
 export default function Feedback({ situation, quizPositions, playerPositions, correctZones, onNext, onShowAll }) {
   if (!situation) return null
 
@@ -19,6 +28,8 @@ export default function Feedback({ situation, quizPositions, playerPositions, co
     pos,
     correct: checkCorrect(pos, playerPositions, correctZones),
     description: situation.positions[pos]?.description || '',
+    reason: situation.positions[pos]?.reason || '',
+    zoneName: correctZones[pos] || '',
   }))
 
   const allCorrect = results.every(r => r.correct)
@@ -35,21 +46,30 @@ export default function Feedback({ situation, quizPositions, playerPositions, co
 
       {/* Per-position results */}
       <div className="flex flex-col gap-2">
-        {results.map(({ pos, correct, description }) => (
-          <div
-            key={pos}
-            className={`flex items-start gap-2 rounded-lg px-3 py-2 text-sm ${correct ? 'bg-green-900/30 border border-green-800' : 'bg-red-900/30 border border-red-800'}`}
-          >
-            <span className={`font-bold text-xs mt-0.5 min-w-[28px] text-center rounded px-1 py-0.5 ${correct ? 'bg-green-700 text-white' : 'bg-red-700 text-white'}`}>
-              {pos}
-            </span>
-            <div className="flex flex-col">
-              <span className={correct ? 'text-green-200' : 'text-red-200'}>
-                {correct ? '✓ ' : '✗ '}{description}
+        {results.map(({ pos, correct, description, reason, zoneName }) => {
+          const tip = !correct ? getRuleTip(zoneName) : null
+          return (
+            <div
+              key={pos}
+              className={`flex items-start gap-2 rounded-lg px-3 py-2 text-sm ${correct ? 'bg-green-900/30 border border-green-800' : 'bg-red-900/30 border border-red-800'}`}
+            >
+              <span className={`font-bold text-xs mt-0.5 min-w-[28px] text-center rounded px-1 py-0.5 ${correct ? 'bg-green-700 text-white' : 'bg-red-700 text-white'}`}>
+                {pos}
               </span>
+              <div className="flex flex-col gap-0.5">
+                <span className={correct ? 'text-green-200' : 'text-red-200'}>
+                  {correct ? '✓ ' : '✗ '}{description}
+                </span>
+                {reason && (
+                  <span className="text-gray-400 text-xs italic">{reason}</span>
+                )}
+                {tip && (
+                  <span className="text-yellow-400 text-xs mt-0.5">{tip}</span>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Show all positions link */}
@@ -92,10 +112,15 @@ export function AllPositionsModal({ situation, onClose }) {
             const posData = situation.positions[pos]
             if (!posData) return null
             return (
-              <div key={pos} className="flex items-start gap-2 text-sm">
-                <span className="font-bold text-xs bg-gray-700 rounded px-1.5 py-0.5 min-w-[28px] text-center text-gray-200 mt-0.5">{pos}</span>
-                <span className="text-gray-300">{posData.description}</span>
-                {posData.coachDecision && <span className="text-yellow-400 text-xs ml-auto shrink-0">⚠️</span>}
+              <div key={pos} className="flex flex-col gap-0.5 text-sm">
+                <div className="flex items-start gap-2">
+                  <span className="font-bold text-xs bg-gray-700 rounded px-1.5 py-0.5 min-w-[28px] text-center text-gray-200 mt-0.5">{pos}</span>
+                  <span className="text-gray-300">{posData.description}</span>
+                  {posData.coachDecision && <span className="text-yellow-400 text-xs ml-auto shrink-0">⚠️</span>}
+                </div>
+                {posData.reason && (
+                  <span className="text-gray-500 text-xs italic ml-10">{posData.reason}</span>
+                )}
               </div>
             )
           })}

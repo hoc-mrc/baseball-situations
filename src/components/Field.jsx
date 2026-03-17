@@ -28,14 +28,22 @@ const POSITION_COLORS = {
 
 // Ball destination SVG positions
 const BALL_POSITIONS = {
-  lf:      { x: 130, y: 148 },
-  cf:      { x: 250, y: 118 },
-  rf:      { x: 370, y: 148 },
-  infield: { x: 235, y: 355 },
-  '2b':    { x: 250, y: 213 },
-  '1b':    { x: 365, y: 317 },
-  '3b':    { x: 135, y: 317 },
-  home:    { x: 250, y: 420 },
+  lf:          { x: 130, y: 148 },
+  cf:          { x: 250, y: 118 },
+  rf:          { x: 370, y: 148 },
+  infield:     { x: 235, y: 355 },
+  '2b':        { x: 250, y: 213 },
+  '1b':        { x: 365, y: 317 },
+  '3b':        { x: 135, y: 317 },
+  home:        { x: 250, y: 420 },
+  'lf-line':   { x: 75,  y: 195 },
+  'lf-gap':    { x: 175, y: 128 },
+  'rf-line':   { x: 425, y: 195 },
+  'rf-gap':    { x: 325, y: 128 },
+  'cf-left':   { x: 190, y: 118 },
+  'cf-right':  { x: 310, y: 118 },
+  'lf-shallow':{ x: 130, y: 205 },
+  'rf-shallow':{ x: 370, y: 205 },
 }
 
 // Play types that have a batted-ball trajectory from home plate

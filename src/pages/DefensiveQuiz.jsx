@@ -5,9 +5,8 @@ import Feedback, { AllPositionsModal } from '../components/Feedback.jsx'
 import { SITUATIONS, pickRandomQuizPositions } from '../data/situations.js'
 import { ZONES } from '../data/zones.js'
 
-function shuffleAndCycle(arr) {
-  const shuffled = [...arr].sort(() => Math.random() - 0.5)
-  return shuffled
+function pickTen(arr) {
+  return [...arr].sort(() => Math.random() - 0.5).slice(0, 10)
 }
 
 const PLAY_TYPE_ICONS = {
@@ -21,7 +20,7 @@ const PLAY_TYPE_ICONS = {
 }
 
 export default function DefensiveQuiz({ mode = 'random', myPosition = null, teamConfig, onBack, onScoreUpdate }) {
-  const [queue, setQueue]                   = useState(() => shuffleAndCycle(SITUATIONS))
+  const [queue, setQueue]                   = useState(() => pickTen(SITUATIONS))
   const [currentIndex, setCurrentIndex]     = useState(0)
   const [quizPositions, setQuizPositions]   = useState([])
   const [playerPositions, setPlayerPositions] = useState({})
@@ -32,7 +31,8 @@ export default function DefensiveQuiz({ mode = 'random', myPosition = null, team
   const [correctCount, setCorrectCount]     = useState(0)
   const [totalAnswered, setTotalAnswered]   = useState(0)
 
-  const situation = queue[currentIndex % queue.length]
+  const sessionDone = currentIndex >= queue.length
+  const situation = queue[Math.min(currentIndex, queue.length - 1)]
 
   // Load a new situation
   const loadSituation = useCallback((sit, pos, teamCfg) => {
@@ -106,6 +106,36 @@ export default function DefensiveQuiz({ mode = 'random', myPosition = null, team
 
   const icon = PLAY_TYPE_ICONS[situation.playType] || '⚾'
 
+  if (sessionDone) {
+    const pct = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 0
+    return (
+      <div className="flex flex-col min-h-dvh max-w-lg mx-auto px-3 py-3 gap-4 items-center justify-center text-center">
+        <div className="text-5xl">⭐</div>
+        <div className="text-white text-2xl font-bold">Session Complete!</div>
+        <div className="text-gray-300 text-lg">{correctCount} / {totalAnswered} correct ({pct}%)</div>
+        <div className="text-gray-400 text-sm">Score: {score} points</div>
+        <div className="flex flex-col gap-3 w-full mt-4">
+          <button
+            onClick={() => {
+              setQueue(pickTen(SITUATIONS))
+              setCurrentIndex(0)
+              setSituationNum(1)
+              setScore(0)
+              setCorrectCount(0)
+              setTotalAnswered(0)
+            }}
+            className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl text-base"
+          >
+            Play Again
+          </button>
+          <button onClick={onBack} className="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 rounded-xl text-base">
+            Back to Menu
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col min-h-dvh max-w-lg mx-auto px-3 py-3 gap-3">
       {/* Top bar */}
@@ -122,7 +152,7 @@ export default function DefensiveQuiz({ mode = 'random', myPosition = null, team
         baseState={situation.baseState}
         outs={0}
         situationNum={situationNum}
-        total={SITUATIONS.length}
+        total={queue.length}
         score={score}
       />
 
