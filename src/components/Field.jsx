@@ -254,10 +254,10 @@ export default function Field({
     if (!svg) return { x: 0, y: 0 }
     const rect = svg.getBoundingClientRect()
     const scaleX = 500 / rect.width
-    const scaleY = 480 / rect.height
+    const scaleY = 390 / rect.height
     return {
       x: Math.max(10, Math.min(490, (clientX - rect.left) * scaleX)),
-      y: Math.max(10, Math.min(470, (clientY - rect.top)  * scaleY)),
+      y: Math.max(95, Math.min(470, (clientY - rect.top)  * scaleY + 90)),
     }
   }, [])
 
