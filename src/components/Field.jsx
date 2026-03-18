@@ -6,8 +6,8 @@ export const DEFAULT_POSITIONS = {
   P:    { x: 250, y: 325 },
   C:    { x: 250, y: 408 },
   '1B': { x: 336, y: 292 },
-  '2B': { x: 308, y: 267 },
-  SS:   { x: 192, y: 267 },
+  '2B': { x: 325, y: 250 },
+  SS:   { x: 175, y: 250 },
   '3B': { x: 163, y: 292 },
   LF:   { x: 130, y: 185 },
   CF:   { x: 250, y: 165 },
@@ -336,7 +336,7 @@ export default function Field({
   return (
     <svg
       ref={svgRef}
-      viewBox="0 0 500 480"
+      viewBox="0 90 500 390"
       className="w-full max-w-lg mx-auto select-none touch-none"
       style={{ maxHeight: '60vh' }}
       onPointerDown={handlePointerDown}

@@ -23,7 +23,7 @@ No React Router. A top-level `mode` state in `App.jsx` controls which screen ren
 - Outfield fence: `FENCE_R = 330` (radius from home plate); fence corners at approx `(4, 200)` and `(496, 200)`
 
 **Default fielder positions** (`src/components/Field.jsx` → `DEFAULT_POSITIONS`):
-- Infield: P `(250,325)`, C `(250,408)`, 1B `(336,292)`, 2B `(308,267)`, SS `(192,267)`, 3B `(163,292)`
+- Infield: P `(250,325)`, C `(250,408)`, 1B `(336,292)`, 2B `(325,250)`, SS `(175,250)`, 3B `(163,292)`
 - Outfield: LF `(130,185)`, CF `(250,165)`, RF `(370,185)`
 - 1B and 3B stand off-bag between their base and the middle infield (not on the bag)
 
