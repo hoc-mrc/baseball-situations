@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { COACH_DECISIONS } from '../data/coachDefaults.js'
 
+const CARD = { background: '#1a1a2e', border: '1px solid #2d2d4e' }
+const BTN_PRIMARY = { background: '#e91e8c', boxShadow: '0 0 16px rgba(233,30,140,0.35)' }
+
 export default function Coach({ teamConfig, onSave, onBack }) {
   const [decisions, setDecisions] = useState({ ...teamConfig })
   const [saved, setSaved]         = useState(false)
@@ -16,7 +19,6 @@ export default function Coach({ teamConfig, onSave, onBack }) {
     onSave(config)
     setSaved(true)
 
-    // Generate shareable URL
     const encoded = btoa(JSON.stringify(config))
     const url = `${window.location.origin}${window.location.pathname}#config=${encoded}`
     navigator.clipboard?.writeText(url).catch(() => {})
@@ -45,36 +47,40 @@ export default function Coach({ teamConfig, onSave, onBack }) {
       </p>
 
       {/* Team name / code */}
-      <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
+      <div className="rounded-xl p-4" style={CARD}>
         <label className="block text-sm font-bold text-gray-300 mb-2">Team Name / Code</label>
         <input
           type="text"
           value={teamName}
           onChange={e => { setTeamName(e.target.value); setSaved(false) }}
           placeholder="e.g. Cardinals 12U"
-          className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-blue-500"
+          className="w-full rounded-lg px-3 py-2 text-white text-sm placeholder-gray-600 focus:outline-none"
+          style={{ background: '#0d0d0f', border: '1px solid #2d2d4e' }}
         />
       </div>
 
       {/* Decision settings */}
       {Object.entries(COACH_DECISIONS).map(([key, decision]) => (
-        <div key={key} className="bg-gray-800 border border-gray-700 rounded-xl p-4">
+        <div key={key} className="rounded-xl p-4" style={CARD}>
           <div className="font-bold text-white text-sm mb-1">{decision.label}</div>
           <div className="text-gray-400 text-xs mb-3">{decision.description}</div>
           <div className="flex flex-col gap-2">
-            {decision.options.map(opt => (
-              <button
-                key={opt.value}
-                onClick={() => handleChange(key, opt.value)}
-                className={`text-left px-3 py-2 rounded-lg text-sm transition-colors border ${
-                  decisions[key] === opt.value
-                    ? 'bg-blue-700 border-blue-500 text-white font-semibold'
-                    : 'bg-gray-900 border-gray-600 text-gray-300 hover:bg-gray-700'
-                }`}
-              >
-                {decisions[key] === opt.value && '✓ '}{opt.label}
-              </button>
-            ))}
+            {decision.options.map(opt => {
+              const isSelected = decisions[key] === opt.value
+              return (
+                <button
+                  key={opt.value}
+                  onClick={() => handleChange(key, opt.value)}
+                  className="text-left px-3 py-2 rounded-lg text-sm transition-all"
+                  style={isSelected
+                    ? { background: '#e91e8c', border: '1px solid #e91e8c', color: 'white', fontWeight: 600 }
+                    : { background: '#0d0d0f', border: '1px solid #2d2d4e', color: '#d1d5db' }
+                  }
+                >
+                  {isSelected && '✓ '}{opt.label}
+                </button>
+              )
+            })}
           </div>
         </div>
       ))}
@@ -83,15 +89,18 @@ export default function Coach({ teamConfig, onSave, onBack }) {
       <div className="flex gap-2 pb-6">
         <button
           onClick={handleSave}
-          className={`flex-1 font-bold py-3 rounded-xl transition-colors ${
-            saved ? 'bg-green-700 text-green-200' : 'bg-blue-600 hover:bg-blue-500 text-white'
-          }`}
+          className="flex-1 font-bold py-3 rounded-xl transition-all active:scale-95 text-white"
+          style={saved
+            ? { background: '#15803d', border: '1px solid #16a34a' }
+            : BTN_PRIMARY
+          }
         >
           {saved ? '✓ Saved' : 'Save Settings'}
         </button>
         <button
           onClick={handleCopyLink}
-          className="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 rounded-xl transition-colors"
+          className="flex-1 font-bold py-3 rounded-xl transition-colors text-gray-300 hover:brightness-125"
+          style={CARD}
         >
           📋 Copy Team Link
         </button>

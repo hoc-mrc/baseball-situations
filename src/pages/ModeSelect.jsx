@@ -5,6 +5,10 @@ const POSITION_NAMES = {
   SS: 'Shortstop', '3B': 'Third Base', LF: 'Left Field', CF: 'Center Field', RF: 'Right Field',
 }
 
+const CARD = { background: '#1a1a2e', border: '1px solid #2d2d4e' }
+const BTN_PRIMARY = { background: '#e91e8c', boxShadow: '0 0 16px rgba(233,30,140,0.35)' }
+const BTN_GRID = { background: '#16213e', border: '1px solid #2d2d4e' }
+
 export default function ModeSelect({ onStart, onBack }) {
   return (
     <div className="flex flex-col min-h-dvh px-4 py-6 gap-6 max-w-sm mx-auto">
@@ -14,22 +18,23 @@ export default function ModeSelect({ onStart, onBack }) {
       </div>
 
       {/* Mode A: Random positions */}
-      <div className="bg-gray-800 border border-gray-700 rounded-2xl p-5">
-        <h3 className="font-bold text-white text-base mb-1">🎲 Random Positions Mode</h3>
+      <div className="rounded-2xl p-5" style={CARD}>
+        <h3 className="font-bold text-white text-base mb-1">Random Positions Mode</h3>
         <p className="text-gray-400 text-sm mb-4">
           Each play, 2–3 randomly chosen positions are tested. Great for learning the whole field.
         </p>
         <button
           onClick={() => onStart({ mode: 'random', position: null })}
-          className="w-full bg-green-600 hover:bg-green-500 active:bg-green-700 text-white font-bold py-3 rounded-xl transition-colors"
+          className="w-full text-white font-bold py-3 rounded-xl transition-all active:scale-95"
+          style={BTN_PRIMARY}
         >
           Start Random Quiz
         </button>
       </div>
 
       {/* Mode B: My position */}
-      <div className="bg-gray-800 border border-gray-700 rounded-2xl p-5">
-        <h3 className="font-bold text-white text-base mb-1">🎯 My Position Mode</h3>
+      <div className="rounded-2xl p-5" style={CARD}>
+        <h3 className="font-bold text-white text-base mb-1">My Position Mode</h3>
         <p className="text-gray-400 text-sm mb-4">
           Choose your position and only study what YOU do on each play.
         </p>
@@ -38,7 +43,8 @@ export default function ModeSelect({ onStart, onBack }) {
             <button
               key={pos}
               onClick={() => onStart({ mode: 'position', position: pos })}
-              className="bg-gray-700 hover:bg-blue-700 active:bg-blue-800 text-white rounded-xl py-2.5 text-sm font-bold transition-colors"
+              className="text-white rounded-xl py-2.5 text-sm font-bold transition-all active:scale-95 hover:brightness-125"
+              style={BTN_GRID}
             >
               <div className="text-base">{pos}</div>
               <div className="text-gray-400 text-xs font-normal truncate px-1">{POSITION_NAMES[pos].split(' ')[0]}</div>

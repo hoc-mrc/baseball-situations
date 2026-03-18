@@ -13,10 +13,13 @@ const CATEGORY_COLORS = {
   'Reading the Ball': 'bg-teal-900/40 border-teal-700 text-teal-300',
 }
 
+const CARD = { background: '#1a1a2e', border: '1px solid #2d2d4e' }
+const BTN_PRIMARY = { background: '#e91e8c', boxShadow: '0 0 16px rgba(233,30,140,0.35)' }
+
 export default function BaserunningQuiz({ onBack }) {
   const [queue]                = useState(() => shuffle(BASERUNNING_QUESTIONS))
   const [index, setIndex]      = useState(0)
-  const [selected, setSelected]= useState(null) // choice id
+  const [selected, setSelected]= useState(null)
   const [answered, setAnswered]= useState(false)
   const [score, setScore]      = useState(0)
   const [total, setTotal]      = useState(0)
@@ -58,11 +61,16 @@ export default function BaserunningQuiz({ onBack }) {
               setSelected(null)
               setAnswered(false)
             }}
-            className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl text-base"
+            className="w-full text-white font-bold py-3 rounded-xl text-base transition-all active:scale-95"
+            style={BTN_PRIMARY}
           >
             Play Again
           </button>
-          <button onClick={onBack} className="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 rounded-xl text-base">
+          <button
+            onClick={onBack}
+            className="w-full font-bold py-3 rounded-xl text-base text-gray-300 transition-colors hover:brightness-125"
+            style={CARD}
+          >
             Back to Menu
           </button>
         </div>
@@ -75,10 +83,10 @@ export default function BaserunningQuiz({ onBack }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <button onClick={onBack} className="text-gray-400 hover:text-white text-xl">←</button>
-        <span className="text-gray-400 text-sm font-semibold">
-          Baserunning Quiz <span className="text-gray-600">{index + 1}/{queue.length}</span>
+        <span className="text-xs font-bold tracking-widest uppercase" style={{ color: '#b5f23d' }}>
+          Baserunning Quiz <span className="text-gray-600 normal-case tracking-normal">{index + 1}/{queue.length}</span>
         </span>
-        <div className="text-yellow-400 font-bold text-sm">⭐ {score}/{total}</div>
+        <div className="font-bold text-sm" style={{ color: '#e91e8c' }}>⭐ {score}/{total}</div>
       </div>
 
       {/* Category badge */}
@@ -87,7 +95,7 @@ export default function BaserunningQuiz({ onBack }) {
       </div>
 
       {/* Situation box */}
-      <div className="bg-gray-800 border border-gray-700 rounded-2xl p-4">
+      <div className="rounded-2xl p-4" style={CARD}>
         <p className="text-white text-sm leading-relaxed">{question.situation}</p>
       </div>
 
@@ -97,16 +105,20 @@ export default function BaserunningQuiz({ onBack }) {
       {/* Answer choices */}
       <div className="flex flex-col gap-3">
         {question.choices.map(choice => {
-          let style = 'bg-gray-800 border-gray-600 text-gray-200 hover:bg-gray-700 active:bg-gray-600'
+          let style
+          let className = 'w-full text-left border rounded-xl px-4 py-3.5 text-sm font-medium transition-all'
 
           if (answered) {
             if (choice.correct) {
-              style = 'bg-green-900/60 border-green-600 text-green-200'
+              style = { background: 'rgba(21,128,61,0.3)', border: '1px solid #16a34a', color: '#bbf7d0' }
             } else if (choice.id === selected && !choice.correct) {
-              style = 'bg-red-900/60 border-red-600 text-red-200'
+              style = { background: 'rgba(153,27,27,0.4)', border: '1px solid #dc2626', color: '#fecaca' }
             } else {
-              style = 'bg-gray-900/40 border-gray-700 text-gray-500'
+              style = { background: 'rgba(13,13,15,0.4)', border: '1px solid #2d2d4e', color: '#6b7280' }
             }
+          } else {
+            style = { background: '#1a1a2e', border: '1px solid #2d2d4e', color: '#e2e8f0' }
+            className += ' hover:brightness-125 active:scale-[0.98]'
           }
 
           return (
@@ -114,7 +126,8 @@ export default function BaserunningQuiz({ onBack }) {
               key={choice.id}
               onClick={() => handleSelect(choice)}
               disabled={answered}
-              className={`w-full text-left border rounded-xl px-4 py-3.5 text-sm font-medium transition-colors ${style}`}
+              className={className}
+              style={style}
             >
               <div className="flex items-center gap-2">
                 {answered && choice.correct && <span>✓</span>}
@@ -128,7 +141,7 @@ export default function BaserunningQuiz({ onBack }) {
 
       {/* Explanation */}
       {answered && (
-        <div className="bg-gray-800 border border-gray-600 rounded-xl px-4 py-3">
+        <div className="rounded-xl px-4 py-3" style={CARD}>
           <div className="text-xs text-gray-400 font-bold mb-1 uppercase tracking-wide">Why?</div>
           <p className="text-gray-300 text-sm leading-relaxed">{question.explanation}</p>
         </div>
@@ -138,7 +151,8 @@ export default function BaserunningQuiz({ onBack }) {
       {answered && (
         <button
           onClick={handleNext}
-          className="w-full bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold py-3.5 rounded-xl text-base transition-colors"
+          className="w-full text-white font-bold py-3.5 rounded-xl text-base transition-all active:scale-95"
+          style={BTN_PRIMARY}
         >
           Next Question →
         </button>
@@ -150,10 +164,10 @@ export default function BaserunningQuiz({ onBack }) {
           <span>Accuracy</span>
           <span>{total > 0 ? Math.round((score / total) * 100) : 0}%</span>
         </div>
-        <div className="w-full bg-gray-800 rounded-full h-1.5">
+        <div className="w-full rounded-full h-1.5" style={{ background: '#1a1a2e' }}>
           <div
-            className="bg-blue-500 h-1.5 rounded-full transition-all"
-            style={{ width: `${total > 0 ? (score / total) * 100 : 0}%` }}
+            className="h-1.5 rounded-full transition-all"
+            style={{ width: `${total > 0 ? (score / total) * 100 : 0}%`, background: '#b5f23d' }}
           />
         </div>
       </div>

@@ -142,7 +142,7 @@ export default function DefensiveQuiz({ mode = 'random', myPosition = null, team
           <div className="flex flex-col gap-2">
             <div className="text-orange-400 font-bold text-sm">Review for next time:</div>
             {wrongSituations.map(({ situation: sit, wrongPositions }, i) => (
-              <div key={i} className="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2">
+              <div key={i} className="rounded-xl px-3 py-2" style={{ background: '#1a1a2e', border: '1px solid #2d2d4e' }}>
                 <div className="text-white font-semibold text-sm mb-1.5">{sit.title}</div>
                 {wrongPositions.map(pos => (
                   <div key={pos} className="flex items-start gap-2 mt-1">
@@ -170,11 +170,16 @@ export default function DefensiveQuiz({ mode = 'random', myPosition = null, team
               setTotalAnswered(0)
               setWrongSituations([])
             }}
-            className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl text-base"
+            className="w-full text-white font-bold py-3 rounded-xl text-base transition-all active:scale-95"
+            style={{ background: '#e91e8c', boxShadow: '0 0 16px rgba(233,30,140,0.35)' }}
           >
             Play Again
           </button>
-          <button onClick={onBack} className="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 rounded-xl text-base">
+          <button
+            onClick={onBack}
+            className="w-full font-bold py-3 rounded-xl text-base text-gray-300 hover:brightness-125"
+            style={{ background: '#1a1a2e', border: '1px solid #2d2d4e' }}
+          >
             Back to Menu
           </button>
         </div>
@@ -187,8 +192,8 @@ export default function DefensiveQuiz({ mode = 'random', myPosition = null, team
       {/* Top bar */}
       <div className="flex items-center justify-between">
         <button onClick={onBack} className="text-gray-400 hover:text-white text-xl px-1">←</button>
-        <span className="text-gray-400 text-xs font-mono">
-          {mode === 'position' ? `MY POSITION: ${myPosition}` : 'RANDOM MODE'}
+        <span className="text-xs font-bold tracking-widest uppercase" style={{ color: '#e91e8c' }}>
+          {mode === 'position' ? `My Position: ${myPosition}` : 'Random Mode'}
         </span>
         <div className="text-yellow-400 font-bold text-sm">⭐ {score}</div>
       </div>
@@ -203,7 +208,7 @@ export default function DefensiveQuiz({ mode = 'random', myPosition = null, team
       />
 
       {/* Situation description */}
-      <div className="bg-gray-800 border border-gray-700 rounded-xl px-4 py-3">
+      <div className="rounded-xl px-4 py-3" style={{ background: '#1a1a2e', border: '1px solid #2d2d4e' }}>
         <div className="flex items-start gap-2">
           <span className="text-xl">{icon}</span>
           <div>
@@ -223,8 +228,8 @@ export default function DefensiveQuiz({ mode = 'random', myPosition = null, team
       {!answered && (
         <div className="text-center text-sm text-gray-300">
           {mode === 'position'
-            ? <>Tap or drag <span className="text-yellow-300 font-bold">{myPosition}</span> to the correct position</>
-            : <>Tap a <span className="text-yellow-300 font-bold">highlighted player</span> ({quizPositions.join(', ')}), then tap their spot — or drag</>
+            ? <>Tap or drag <span className="font-bold" style={{ color: '#b5f23d' }}>{myPosition}</span> to the correct position</>
+            : <>Tap a <span className="font-bold" style={{ color: '#b5f23d' }}>highlighted player</span> ({quizPositions.join(', ')}), then tap their spot — or drag</>
           }
         </div>
       )}
@@ -246,11 +251,11 @@ export default function DefensiveQuiz({ mode = 'random', myPosition = null, team
       {!answered ? (
         <button
           onClick={handleCheck}
-          className={`w-full font-bold py-3.5 rounded-xl text-base transition-all ${
-            allMoved
-              ? 'bg-white text-gray-900 hover:bg-gray-100 active:bg-gray-200'
-              : 'bg-gray-700 text-gray-400 cursor-default'
-          }`}
+          className="w-full font-bold py-3.5 rounded-xl text-base transition-all active:scale-95"
+          style={allMoved
+            ? { background: '#b5f23d', color: '#0d0d0f', boxShadow: '0 0 16px rgba(181,242,61,0.35)' }
+            : { background: '#1a1a2e', color: '#6b7280', cursor: 'default', border: '1px solid #2d2d4e' }
+          }
           disabled={!allMoved}
         >
           {allMoved ? 'Check Answer' : 'Drag players to their positions'}
@@ -275,10 +280,10 @@ export default function DefensiveQuiz({ mode = 'random', myPosition = null, team
       )}
 
       {/* Progress bar */}
-      <div className="w-full bg-gray-800 rounded-full h-1">
+      <div className="w-full rounded-full h-1" style={{ background: '#1a1a2e' }}>
         <div
-          className="bg-green-500 h-1 rounded-full transition-all"
-          style={{ width: `${totalAnswered > 0 ? Math.min(100, (correctCount / totalAnswered) * 100) : 0}%` }}
+          className="h-1 rounded-full transition-all"
+          style={{ width: `${totalAnswered > 0 ? Math.min(100, (correctCount / totalAnswered) * 100) : 0}%`, background: '#b5f23d' }}
         />
       </div>
     </div>

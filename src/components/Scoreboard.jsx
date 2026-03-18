@@ -1,14 +1,17 @@
 function Base({ filled }) {
   return (
     <div
-      className={`w-5 h-5 rotate-45 border-2 ${filled ? 'bg-orange-400 border-orange-300' : 'bg-transparent border-gray-500'}`}
+      className={`w-5 h-5 rotate-45 border-2 ${filled ? 'bg-brand-lime border-brand-lime-dark' : 'bg-transparent border-gray-600'}`}
     />
   )
 }
 
 export default function Scoreboard({ baseState = {}, outs = 0, situationNum = 1, total = 1, score = 0 }) {
   return (
-    <div className="flex items-center justify-between bg-gray-900 border border-gray-700 rounded-xl px-4 py-2 text-sm font-mono">
+    <div
+      className="flex items-center justify-between rounded-xl px-4 py-2 text-sm font-mono"
+      style={{ background: '#1a1a2e', border: '1px solid #2d2d4e' }}
+    >
       {/* Situation counter */}
       <div className="text-gray-400 text-xs">
         <span className="text-white font-bold">{situationNum}</span>
@@ -43,7 +46,7 @@ export default function Scoreboard({ baseState = {}, outs = 0, situationNum = 1,
       {/* Score */}
       <div className="text-right">
         <div className="text-gray-400 text-xs">SCORE</div>
-        <div className="text-yellow-400 font-bold">{score}</div>
+        <div className="font-bold" style={{ color: '#e91e8c' }}>{score}</div>
       </div>
     </div>
   )
