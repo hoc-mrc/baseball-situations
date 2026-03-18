@@ -9,6 +9,14 @@ function pickTen(arr) {
   return [...arr].sort(() => Math.random() - 0.5).slice(0, 10)
 }
 
+// For position mode: only include situations where this position actually moves
+function pickPositionQueue(situations, position) {
+  const eligible = situations.filter(sit =>
+    sit.positions[position]?.quiz === true
+  )
+  return [...eligible].sort(() => Math.random() - 0.5).slice(0, 10)
+}
+
 const PLAY_TYPE_ICONS = {
   fly_ball:    '🔵',
   ground_ball: '⚡',
@@ -21,7 +29,11 @@ const PLAY_TYPE_ICONS = {
 }
 
 export default function DefensiveQuiz({ mode = 'random', myPosition = null, teamConfig, onBack, onScoreUpdate }) {
-  const [queue, setQueue]                   = useState(() => pickTen(SITUATIONS))
+  const [queue, setQueue]                   = useState(() =>
+    mode === 'position' && myPosition
+      ? pickPositionQueue(SITUATIONS, myPosition)
+      : pickTen(SITUATIONS)
+  )
   const [currentIndex, setCurrentIndex]     = useState(0)
   const [quizPositions, setQuizPositions]   = useState([])
   const [playerPositions, setPlayerPositions] = useState({})
@@ -162,7 +174,11 @@ export default function DefensiveQuiz({ mode = 'random', myPosition = null, team
         <div className="flex flex-col gap-3 mt-2">
           <button
             onClick={() => {
-              setQueue(pickTen(SITUATIONS))
+              setQueue(
+                mode === 'position' && myPosition
+                  ? pickPositionQueue(SITUATIONS, myPosition)
+                  : pickTen(SITUATIONS)
+              )
               setCurrentIndex(0)
               setSituationNum(1)
               setScore(0)
